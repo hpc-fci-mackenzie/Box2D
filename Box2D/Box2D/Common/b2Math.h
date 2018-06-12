@@ -409,34 +409,34 @@ extern const b2Vec2 b2Vec2_zero;
 /// Perform the dot product on two vectors.
 inline float32 b2Dot(const b2Vec2& a, const b2Vec2& b)
 {
-	return a.x * b.x + a.y * b.y;
+	return a.vector[0] * b.vector[0] + a.vector[1] * b.vector[1];
 }
 
 /// Perform the cross product on two vectors. In 2D this produces a scalar.
 inline float32 b2Cross(const b2Vec2& a, const b2Vec2& b)
 {
-	return a.x * b.y - a.y * b.x;
+	return a.vector[0] * b.vector[1] - a.vector[1] * b.vector[0];
 }
 
 /// Perform the cross product on a vector and a scalar. In 2D this produces
 /// a vector.
 inline b2Vec2 b2Cross(const b2Vec2& a, float32 s)
 {
-	return b2Vec2(s * a.y, -s * a.x);
+	return b2Vec2(s * a.vector[1], -s * a.vector[0]);
 }
 
 /// Perform the cross product on a scalar and a vector. In 2D this produces
 /// a vector.
 inline b2Vec2 b2Cross(float32 s, const b2Vec2& a)
 {
-	return b2Vec2(-s * a.y, s * a.x);
+	return b2Vec2(-s * a.vector[1], s * a.vector[0]);
 }
 
 /// Multiply a matrix times a vector. If a rotation matrix is provided,
 /// then this transforms the vector from one frame to another.
 inline b2Vec2 b2Mul(const b2Mat22& A, const b2Vec2& v)
 {
-	return b2Vec2(A.ex.x * v.x + A.ey.x * v.y, A.ex.y * v.x + A.ey.y * v.y);
+	return b2Vec2(A.ex.vector[0] * v.vector[0] + A.ey.vector[0] * v.vector[1], A.ex.vector[1] * v.vector[0] + A.ey.vector[1] * v.vector[1]);
 }
 
 /// Multiply a matrix transpose times a vector. If a rotation matrix is provided,
@@ -449,28 +449,28 @@ inline b2Vec2 b2MulT(const b2Mat22& A, const b2Vec2& v)
 /// Add two vectors component-wise.
 inline b2Vec2 operator + (const b2Vec2& a, const b2Vec2& b)
 {
-	return b2Vec2(a.x + b.x, a.y + b.y);
+	return b2Vec2(a.vector[0] + b.vector[0], a.vector[1] + b.vector[1]);
 }
 
 /// Subtract two vectors component-wise.
 inline b2Vec2 operator - (const b2Vec2& a, const b2Vec2& b)
 {
-	return b2Vec2(a.x - b.x, a.y - b.y);
+	return b2Vec2(a.vector[0] - b.vector[0], a.vector[1] - b.vector[1]);
 }
 
 inline b2Vec2 operator * (float32 s, const b2Vec2& a)
 {
-	return b2Vec2(s * a.x, s * a.y);
+	return b2Vec2(s * a.vector[0], s * a.vector[1]);
 }
 
 inline bool operator == (const b2Vec2& a, const b2Vec2& b)
 {
-	return a.x == b.x && a.y == b.y;
+	return a.vector[0] == b.vector[0] && a.vector[1] == b.vector[1];
 }
 
 inline bool operator != (const b2Vec2& a, const b2Vec2& b)
 {
-	return a.x != b.x || a.y != b.y;
+	return a.vector[0] != b.vector[0] || a.vector[1] != b.vector[1];
 }
 
 inline float32 b2Distance(const b2Vec2& a, const b2Vec2& b)
