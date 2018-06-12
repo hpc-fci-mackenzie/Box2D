@@ -542,7 +542,7 @@ inline b2Vec3 b2Mul(const b2Mat33& A, const b2Vec3& v)
 /// Multiply a matrix times a vector.
 inline b2Vec2 b2Mul22(const b2Mat33& A, const b2Vec2& v)
 {
-	return b2Vec2(A.ex.x * v.x + A.ey.x * v.y, A.ex.y * v.x + A.ey.y * v.y);
+	return b2Vec2(A.ex.x * v.vector[0] + A.ey.y * v.vector[1], A.ex.y * v.vector[0] + A.ey.y * v.vector[1]);
 }
 
 /// Multiply two rotations: q * r
@@ -574,27 +574,27 @@ inline b2Rot b2MulT(const b2Rot& q, const b2Rot& r)
 /// Rotate a vector
 inline b2Vec2 b2Mul(const b2Rot& q, const b2Vec2& v)
 {
-	return b2Vec2(q.c * v.x - q.s * v.y, q.s * v.x + q.c * v.y);
+	return b2Vec2(q.c * v.vector[0] - q.s * v.vector[1], q.s * v.vector[0] + q.c * v.vector[1]);
 }
 
 /// Inverse rotate a vector
 inline b2Vec2 b2MulT(const b2Rot& q, const b2Vec2& v)
 {
-	return b2Vec2(q.c * v.x + q.s * v.y, -q.s * v.x + q.c * v.y);
+	return b2Vec2(q.c * v.vector[0] + q.s * v.vector[1], -q.s * v.vector[0] + q.c * v.vector[1]);
 }
 
 inline b2Vec2 b2Mul(const b2Transform& T, const b2Vec2& v)
 {
-	float32 x = (T.q.c * v.x - T.q.s * v.y) + T.p.x;
-	float32 y = (T.q.s * v.x + T.q.c * v.y) + T.p.y;
+	float32 x = (T.q.c * v.vector[0] - T.q.s * v.vector[1]) + T.p.vector[0];
+	float32 y = (T.q.s * v.vector[0] + T.q.c * v.vector[1]) + T.p.vector[1];
 
 	return b2Vec2(x, y);
 }
 
 inline b2Vec2 b2MulT(const b2Transform& T, const b2Vec2& v)
 {
-	float32 px = v.x - T.p.x;
-	float32 py = v.y - T.p.y;
+	float32 px = v.vector[0] - T.p.vector[0];
+	float32 py = v.vector[1] - T.p.vector[1];
 	float32 x = (T.q.c * px + T.q.s * py);
 	float32 y = (-T.q.s * px + T.q.c * py);
 
@@ -629,7 +629,7 @@ inline T b2Abs(T a)
 
 inline b2Vec2 b2Abs(const b2Vec2& a)
 {
-	return b2Vec2(b2Abs(a.x), b2Abs(a.y));
+	return b2Vec2(b2Abs(a.vector[0]), b2Abs(a.vector[1]));
 }
 
 inline b2Mat22 b2Abs(const b2Mat22& A)
@@ -645,7 +645,7 @@ inline T b2Min(T a, T b)
 
 inline b2Vec2 b2Min(const b2Vec2& a, const b2Vec2& b)
 {
-	return b2Vec2(b2Min(a.x, b.x), b2Min(a.y, b.y));
+	return b2Vec2(b2Min(a.vector[0], b.vector[0]), b2Min(a.vector[1], b.vector[1]));
 }
 
 template <typename T>
@@ -656,7 +656,7 @@ inline T b2Max(T a, T b)
 
 inline b2Vec2 b2Max(const b2Vec2& a, const b2Vec2& b)
 {
-	return b2Vec2(b2Max(a.x, b.x), b2Max(a.y, b.y));
+	return b2Vec2(b2Max(a.vector[0], b.vector[0]), b2Max(a.vector[1], b.vector[1]));
 }
 
 template <typename T>
