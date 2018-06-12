@@ -197,8 +197,8 @@ struct b2Mat22
 	/// Construct this matrix using scalars.
 	b2Mat22(float32 a11, float32 a12, float32 a21, float32 a22)
 	{
-		ex.x = a11; ex.y = a21;
-		ey.x = a12; ey.y = a22;
+		ex.vector[0] = a11; ex.vector[1] = a21;
+		ey.vector[0] = a12; ey.vector[1] = a22;
 	}
 
 	/// Initialize this matrix using columns.
@@ -211,28 +211,29 @@ struct b2Mat22
 	/// Set this to the identity matrix.
 	void SetIdentity()
 	{
-		ex.x = 1.0f; ey.x = 0.0f;
-		ex.y = 0.0f; ey.y = 1.0f;
+		ex.vector[0] = 1.0f; ey.vector[0] = 0.0f;
+		ex.vector[1] = 0.0f; ey.vector[1] = 1.0f;
 	}
 
 	/// Set this matrix to all zeros.
 	void SetZero()
 	{
-		ex.x = 0.0f; ey.x = 0.0f;
-		ex.y = 0.0f; ey.y = 0.0f;
+		ex.vector[0] = 0.0f; ey.vector[0] = 0.0f;
+		ex.vector[1] = 0.0f; ey.vector[1] = 0.0f;
 	}
 
 	b2Mat22 GetInverse() const
 	{
-		float32 a = ex.x, b = ey.x, c = ex.y, d = ey.y;
+		// TODO: change a, b, c and d in this code to the real vector[] position - does it improve auto-vectorization?
+		float32 a = ex.vector[0], b = ey.vector[0], c = ex.vector[1], d = ey.vector[1];
 		b2Mat22 B;
 		float32 det = a * d - b * c;
 		if (det != 0.0f)
 		{
 			det = 1.0f / det;
 		}
-		B.ex.x =  det * d;	B.ey.x = -det * b;
-		B.ex.y = -det * c;	B.ey.y =  det * a;
+		B.ex.vector[0] =  det * d;	B.ey.vector[0] = -det * b;
+		B.ex.vector[1] = -det * c;	B.ey.vector[1] =  det * a;
 		return B;
 	}
 
@@ -240,15 +241,16 @@ struct b2Mat22
 	/// than computing the inverse in one-shot cases.
 	b2Vec2 Solve(const b2Vec2& b) const
 	{
-		float32 a11 = ex.x, a12 = ey.x, a21 = ex.y, a22 = ey.y;
+		// TODO: change a, b, c and d in this code to the real vector[] position - does it improve auto-vectorization?
+		float32 a11 = ex.vector[0], a12 = ey.vector[0], a21 = ex.vector[1], a22 = ey.vector[1];
 		float32 det = a11 * a22 - a12 * a21;
 		if (det != 0.0f)
 		{
 			det = 1.0f / det;
 		}
 		b2Vec2 x;
-		x.x = det * (a22 * b.x - a12 * b.y);
-		x.y = det * (a11 * b.y - a21 * b.x);
+		x.vector[0] = det * (a22 * b.vector[0] - a12 * b.vector[1]);
+		x.vector[1] = det * (a11 * b.vector[1] - a21 * b.vector[0]);
 		return x;
 	}
 
