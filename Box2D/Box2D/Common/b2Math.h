@@ -56,58 +56,58 @@ struct b2Vec2
 	b2Vec2() {}
 
 	/// Construct using coordinates.
-	b2Vec2(float32 xIn, float32 yIn) : x(xIn), y(yIn) {}
+	b2Vec2(float32 xIn, float32 yIn) : vector{xIn, yIn} {}
 
 	/// Set this vector to all zeros.
-	void SetZero() { x = 0.0f; y = 0.0f; }
+	void SetZero() { vector[0] = 0.0f; vector[1] = 0.0f; }
 
 	/// Set this vector to some specified coordinates.
-	void Set(float32 x_, float32 y_) { x = x_; y = y_; }
+	void Set(float32 x_, float32 y_) { vector[0] = x_; vector[1] = y_; }
 
 	/// Negate this vector.
-	b2Vec2 operator -() const { b2Vec2 v; v.Set(-x, -y); return v; }
+	b2Vec2 operator -() const { b2Vec2 v; v.Set(-vector[0], -vector[1]); return v; }
 	
 	/// Read from and indexed element.
 	float32 operator () (int32 i) const
 	{
-		return (&x)[i];
+		return (&vector[0])[i];
 	}
 
 	/// Write to an indexed element.
 	float32& operator () (int32 i)
 	{
-		return (&x)[i];
+		return (&vector[0])[i];
 	}
 
 	/// Add a vector to this vector.
 	void operator += (const b2Vec2& v)
 	{
-		x += v.x; y += v.y;
+		vector[0] += v.vector[0]; vector[1] += v.vector[1];
 	}
 	
 	/// Subtract a vector from this vector.
 	void operator -= (const b2Vec2& v)
 	{
-		x -= v.x; y -= v.y;
+		vector[0] -= v.vector[0]; vector[1] -= v.vector[1];
 	}
 
 	/// Multiply this vector by a scalar.
 	void operator *= (float32 a)
 	{
-		x *= a; y *= a;
+		vector[0] *= a; vector[1] *= a;
 	}
 
 	/// Get the length of this vector (the norm).
 	float32 Length() const
 	{
-		return b2Sqrt(x * x + y * y);
+		return b2Sqrt(vector[0] * vector[0] + vector[1] * vector[1]);
 	}
 
 	/// Get the length squared. For performance, use this instead of
 	/// b2Vec2::Length (if possible).
 	float32 LengthSquared() const
 	{
-		return x * x + y * y;
+		return vector[0] * vector[0] + vector[1] * vector[1];
 	}
 
 	/// Convert this vector into a unit vector. Returns the length.
@@ -119,8 +119,8 @@ struct b2Vec2
 			return 0.0f;
 		}
 		float32 invLength = 1.0f / length;
-		x *= invLength;
-		y *= invLength;
+		vector[0] *= invLength;
+		vector[1] *= invLength;
 
 		return length;
 	}
@@ -128,13 +128,13 @@ struct b2Vec2
 	/// Does this vector contain finite coordinates?
 	bool IsValid() const
 	{
-		return b2IsValid(x) && b2IsValid(y);
+		return b2IsValid(vector[0]) && b2IsValid(vector[1]);
 	}
 
 	/// Get the skew vector such that dot(skew_vec, other) == cross(vec, other)
 	b2Vec2 Skew() const
 	{
-		return b2Vec2(-y, x);
+		return b2Vec2(-vector[1], vector[0]);
 	}
 
 	// x : vector[0]
