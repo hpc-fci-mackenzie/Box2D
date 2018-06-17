@@ -9,4 +9,4 @@ cd Build
 for i in $( grep -R "C++11" * | cut -d : -f1 ); do
 	sed -i '' -e "s/C\+\+11/c\+\+11/g" $i
 done
-xcodebuild -project Box2D.xcodeproj -configuration Release -verbose
+xcodebuild -project Box2D.xcodeproj -configuration Release -verbose OTHER_CFLAGS="-ferror-limit=0"

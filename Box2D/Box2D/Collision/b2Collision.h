@@ -179,8 +179,8 @@ struct b2AABB
 	/// Get the perimeter length
 	float32 GetPerimeter() const
 	{
-		float32 wx = upperBound.x - lowerBound.x;
-		float32 wy = upperBound.y - lowerBound.y;
+		float32 wx = upperBound.vector[0] - lowerBound.vector[0];
+		float32 wy = upperBound.vector[1] - lowerBound.vector[1];
 		return 2.0f * (wx + wy);
 	}
 
@@ -202,10 +202,10 @@ struct b2AABB
 	bool Contains(const b2AABB& aabb) const
 	{
 		bool result = true;
-		result = result && lowerBound.x <= aabb.lowerBound.x;
-		result = result && lowerBound.y <= aabb.lowerBound.y;
-		result = result && aabb.upperBound.x <= upperBound.x;
-		result = result && aabb.upperBound.y <= upperBound.y;
+		result = result && lowerBound.vector[0] <= aabb.lowerBound.vector[0];
+		result = result && lowerBound.vector[1] <= aabb.lowerBound.vector[1];
+		result = result && aabb.upperBound.vector[0] <= upperBound.vector[0];
+		result = result && aabb.upperBound.vector[1] <= upperBound.vector[1];
 		return result;
 	}
 
@@ -254,7 +254,7 @@ bool b2TestOverlap(	const b2Shape* shapeA, int32 indexA,
 inline bool b2AABB::IsValid() const
 {
 	b2Vec2 d = upperBound - lowerBound;
-	bool valid = d.x >= 0.0f && d.y >= 0.0f;
+	bool valid = d.vector[0] >= 0.0f && d.vector[1] >= 0.0f;
 	valid = valid && lowerBound.IsValid() && upperBound.IsValid();
 	return valid;
 }
@@ -265,10 +265,10 @@ inline bool b2TestOverlap(const b2AABB& a, const b2AABB& b)
 	d1 = b.lowerBound - a.upperBound;
 	d2 = a.lowerBound - b.upperBound;
 
-	if (d1.x > 0.0f || d1.y > 0.0f)
+	if (d1.vector[0] > 0.0f || d1.vector[1] > 0.0f)
 		return false;
 
-	if (d2.x > 0.0f || d2.y > 0.0f)
+	if (d2.vector[0] > 0.0f || d2.vector[1] > 0.0f)
 		return false;
 
 	return true;
