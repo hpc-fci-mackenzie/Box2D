@@ -149,36 +149,39 @@ struct b2Vec3
 	b2Vec3() {}
 
 	/// Construct using coordinates.
-	b2Vec3(float32 xIn, float32 yIn, float32 zIn) : x(xIn), y(yIn), z(zIn) {}
+	b2Vec3(float32 xIn, float32 yIn, float32 zIn) : vector{xIn, yIn, zIn} {}
 
 	/// Set this vector to all zeros.
-	void SetZero() { x = 0.0f; y = 0.0f; z = 0.0f; }
+	void SetZero() { vector[0] = 0.0f; vector[1] = 0.0f; vector[2] = 0.0f; }
 
 	/// Set this vector to some specified coordinates.
-	void Set(float32 x_, float32 y_, float32 z_) { x = x_; y = y_; z = z_; }
+	void Set(float32 x_, float32 y_, float32 z_) { vector[0] = x_; vector[1] = y_; vector[2] = z_; }
 
 	/// Negate this vector.
-	b2Vec3 operator -() const { b2Vec3 v; v.Set(-x, -y, -z); return v; }
+	b2Vec3 operator -() const { b2Vec3 v; v.Set(-vector[0], -vector[1], -vector[2]); return v; }
 
 	/// Add a vector to this vector.
 	void operator += (const b2Vec3& v)
 	{
-		x += v.x; y += v.y; z += v.z;
+		vector[0] += v.vector[0]; vector[1] += v.vector[1]; vector[2] += v.vector[2];
 	}
 
 	/// Subtract a vector from this vector.
 	void operator -= (const b2Vec3& v)
 	{
-		x -= v.x; y -= v.y; z -= v.z;
+		vector[0] -= v.vector[0]; vector[1] -= v.vector[1]; vector[2] -= v.vector[2];
 	}
 
 	/// Multiply this vector by a scalar.
 	void operator *= (float32 s)
 	{
-		x *= s; y *= s; z *= s;
+		vector[0] *= s; vector[1] *= s; vector[2] *= s;
 	}
 
-	float32 x, y, z;
+    // x : vector[0]
+    // y : vector[1]
+    // z : vector[2]
+    float32 vector[3];
 };
 
 /// A 2-by-2 matrix. Stored in column-major order.
