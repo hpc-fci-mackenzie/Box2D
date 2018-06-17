@@ -165,11 +165,11 @@ void b2PolygonShape::Set(const b2Vec2* vertices, int32 count)
 
 	// Find the right most point on the hull
 	int32 i0 = 0;
-	float32 x0 = ps[0].x;
+	float32 x0 = ps[0].vector[0];
 	for (int32 i = 1; i < n; ++i)
 	{
-		float32 x = ps[i].x;
-		if (x > x0 || (x == x0 && ps[i].y < ps[i0].y))
+		float32 x = ps[i].vector[0];
+		if (x > x0 || (x == x0 && ps[i].vector[1] < ps[i0].vector[1]))
 		{
 			i0 = i;
 			x0 = x;
@@ -415,8 +415,8 @@ void b2PolygonShape::ComputeMass(b2MassData* massData, float32 density) const
 		// Area weighted centroid
 		center += triangleArea * k_inv3 * (e1 + e2);
 
-		float32 ex1 = e1.x, ey1 = e1.y;
-		float32 ex2 = e2.x, ey2 = e2.y;
+		float32 ex1 = e1.vector[0], ey1 = e1.vector[1];
+		float32 ex2 = e2.vector[0], ey2 = e2.vector[1];
 
 		float32 intx2 = ex1*ex1 + ex2*ex1 + ex2*ex2;
 		float32 inty2 = ey1*ey1 + ey2*ey1 + ey2*ey2;

@@ -137,10 +137,10 @@ void b2MouseJoint::InitVelocityConstraints(const b2SolverData& data)
 	//      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
 	//        [    0     1/m1+1/m2]           [-r1.x*r1.y r1.x*r1.x]           [-r1.x*r1.y r1.x*r1.x]
 	b2Mat22 K;
-	K.ex.x = m_invMassB + m_invIB * m_rB.y * m_rB.y + m_gamma;
-	K.ex.y = -m_invIB * m_rB.x * m_rB.y;
-	K.ey.x = K.ex.y;
-	K.ey.y = m_invMassB + m_invIB * m_rB.x * m_rB.x + m_gamma;
+	K.ex.vector[0] = m_invMassB + m_invIB * m_rB.vector[1] * m_rB.vector[1] + m_gamma;
+	K.ex.vector[1] = -m_invIB * m_rB.vector[0] * m_rB.vector[1];
+	K.ey.vector[0] = K.ex.vector[1];
+	K.ey.vector[1] = m_invMassB + m_invIB * m_rB.vector[0] * m_rB.vector[0] + m_gamma;
 
 	m_mass = K.GetInverse();
 

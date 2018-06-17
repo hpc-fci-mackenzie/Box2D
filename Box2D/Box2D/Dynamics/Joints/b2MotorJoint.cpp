@@ -103,10 +103,10 @@ void b2MotorJoint::InitVelocityConstraints(const b2SolverData& data)
 
 	// Upper 2 by 2 of K for point to point
 	b2Mat22 K;
-	K.ex.x = mA + mB + iA * m_rA.y * m_rA.y + iB * m_rB.y * m_rB.y;
-	K.ex.y = -iA * m_rA.x * m_rA.y - iB * m_rB.x * m_rB.y;
-	K.ey.x = K.ex.y;
-	K.ey.y = mA + mB + iA * m_rA.x * m_rA.x + iB * m_rB.x * m_rB.x;
+	K.ex.vector[0] = mA + mB + iA * m_rA.vector[1] * m_rA.vector[1] + iB * m_rB.vector[1] * m_rB.vector[1];
+	K.ex.vector[1] = -iA * m_rA.vector[0] * m_rA.vector[1] - iB * m_rB.vector[0] * m_rB.vector[1];
+	K.ey.vector[0] = K.ex.vector[1];
+	K.ey.vector[1] = mA + mB + iA * m_rA.vector[0] * m_rA.vector[0] + iB * m_rB.vector[0] * m_rB.vector[0];
 
 	m_linearMass = K.GetInverse();
 
@@ -125,7 +125,7 @@ void b2MotorJoint::InitVelocityConstraints(const b2SolverData& data)
 		m_linearImpulse *= data.step.dtRatio;
 		m_angularImpulse *= data.step.dtRatio;
 
-		b2Vec2 P(m_linearImpulse.x, m_linearImpulse.y);
+		b2Vec2 P(m_linearImpulse.vector[0], m_linearImpulse.vector[1]);
 		vA -= mA * P;
 		wA -= iA * (b2Cross(m_rA, P) + m_angularImpulse);
 		vB += mB * P;
@@ -263,7 +263,7 @@ float32 b2MotorJoint::GetCorrectionFactor() const
 
 void b2MotorJoint::SetLinearOffset(const b2Vec2& linearOffset)
 {
-	if (linearOffset.x != m_linearOffset.x || linearOffset.y != m_linearOffset.y)
+	if (linearOffset.vector[0] != m_linearOffset.vector[0] || linearOffset.vector[1] != m_linearOffset.vector[1])
 	{
 		m_bodyA->SetAwake(true);
 		m_bodyB->SetAwake(true);
@@ -300,7 +300,7 @@ void b2MotorJoint::Dump()
 	b2Log("  jd.bodyA = bodies[%d];\n", indexA);
 	b2Log("  jd.bodyB = bodies[%d];\n", indexB);
 	b2Log("  jd.collideConnected = bool(%d);\n", m_collideConnected);
-	b2Log("  jd.linearOffset.Set(%.15lef, %.15lef);\n", m_linearOffset.x, m_linearOffset.y);
+	b2Log("  jd.linearOffset.Set(%.15lef, %.15lef);\n", m_linearOffset.vector[0], m_linearOffset.vector[1]);
 	b2Log("  jd.angularOffset = %.15lef;\n", m_angularOffset);
 	b2Log("  jd.maxForce = %.15lef;\n", m_maxForce);
 	b2Log("  jd.maxTorque = %.15lef;\n", m_maxTorque);

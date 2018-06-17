@@ -47,8 +47,8 @@ b2Vec2 b2Mat33::Solve22(const b2Vec2& b) const
 		det = 1.0f / det;
 	}
 	b2Vec2 x;
-	x.x = det * (a22 * b.x - a12 * b.y);
-	x.y = det * (a11 * b.y - a21 * b.x);
+	x.vector[0] = det * (a22 * b.vector[0] - a12 * b.vector[1]);
+	x.vector[1] = det * (a11 * b.vector[1] - a21 * b.vector[0]);
 	return x;
 }
 

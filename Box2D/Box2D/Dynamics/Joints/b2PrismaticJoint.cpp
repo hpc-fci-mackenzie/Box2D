@@ -292,15 +292,15 @@ void b2PrismaticJoint::SolveVelocityConstraints(const b2SolverData& data)
 	}
 
 	b2Vec2 Cdot1;
-	Cdot1.x = b2Dot(m_perp, vB - vA) + m_s2 * wB - m_s1 * wA;
-	Cdot1.y = wB - wA;
+	Cdot1.vector[0] = b2Dot(m_perp, vB - vA) + m_s2 * wB - m_s1 * wA;
+	Cdot1.vector[1] = wB - wA;
 
 	if (m_enableLimit && m_limitState != e_inactiveLimit)
 	{
 		// Solve prismatic and limit constraint in block form.
 		float32 Cdot2;
 		Cdot2 = b2Dot(m_axis, vB - vA) + m_a2 * wB - m_a1 * wA;
-		b2Vec3 Cdot(Cdot1.x, Cdot1.y, Cdot2);
+		b2Vec3 Cdot(Cdot1.vector[0], Cdot1.vector[1], Cdot2);
 
 		b2Vec3 f1 = m_impulse;
 		b2Vec3 df =  m_K.Solve33(-Cdot);
@@ -318,8 +318,8 @@ void b2PrismaticJoint::SolveVelocityConstraints(const b2SolverData& data)
 		// f2(1:2) = invK(1:2,1:2) * (-Cdot(1:2) - K(1:2,3) * (f2(3) - f1(3))) + f1(1:2)
 		b2Vec2 b = -Cdot1 - (m_impulse.z - f1.z) * b2Vec2(m_K.ez.x, m_K.ez.y);
 		b2Vec2 f2r = m_K.Solve22(b) + b2Vec2(f1.x, f1.y);
-		m_impulse.x = f2r.x;
-		m_impulse.y = f2r.y;
+		m_impulse.x = f2r.vector[0];
+		m_impulse.y = f2r.vector[1];
 
 		df = m_impulse - f1;
 
@@ -337,12 +337,12 @@ void b2PrismaticJoint::SolveVelocityConstraints(const b2SolverData& data)
 	{
 		// Limit is inactive, just solve the prismatic constraint in block form.
 		b2Vec2 df = m_K.Solve22(-Cdot1);
-		m_impulse.x += df.x;
-		m_impulse.y += df.y;
+		m_impulse.x += df.vector[0];
+		m_impulse.y += df.vector[1];
 
-		b2Vec2 P = df.x * m_perp;
-		float32 LA = df.x * m_s1 + df.y;
-		float32 LB = df.x * m_s2 + df.y;
+		b2Vec2 P = df.vector[0] * m_perp;
+		float32 LA = df.vector[0] * m_s1 + df.vector[1];
+		float32 LB = df.vector[0] * m_s2 + df.vector[1];
 
 		vA -= mA * P;
 		wA -= iA * LA;
@@ -391,11 +391,11 @@ bool b2PrismaticJoint::SolvePositionConstraints(const b2SolverData& data)
 
 	b2Vec3 impulse;
 	b2Vec2 C1;
-	C1.x = b2Dot(perp, d);
-	C1.y = aB - aA - m_referenceAngle;
+	C1.vector[0] = b2Dot(perp, d);
+	C1.vector[1] = aB - aA - m_referenceAngle;
 
-	float32 linearError = b2Abs(C1.x);
-	float32 angularError = b2Abs(C1.y);
+	float32 linearError = b2Abs(C1.vector[0]);
+	float32 angularError = b2Abs(C1.vector[1]);
 
 	bool active = false;
 	float32 C2 = 0.0f;
@@ -445,8 +445,8 @@ bool b2PrismaticJoint::SolvePositionConstraints(const b2SolverData& data)
 		K.ez.Set(k13, k23, k33);
 
 		b2Vec3 C;
-		C.x = C1.x;
-		C.y = C1.y;
+		C.x = C1.vector[0];
+		C.y = C1.vector[1];
 		C.z = C2;
 
 		impulse = K.Solve33(-C);
@@ -466,8 +466,8 @@ bool b2PrismaticJoint::SolvePositionConstraints(const b2SolverData& data)
 		K.ey.Set(k12, k22);
 
 		b2Vec2 impulse1 = K.Solve(-C1);
-		impulse.x = impulse1.x;
-		impulse.y = impulse1.y;
+		impulse.x = impulse1.vector[0];
+		impulse.y = impulse1.vector[1];
 		impulse.z = 0.0f;
 	}
 
@@ -628,9 +628,9 @@ void b2PrismaticJoint::Dump()
 	b2Log("  jd.bodyA = bodies[%d];\n", indexA);
 	b2Log("  jd.bodyB = bodies[%d];\n", indexB);
 	b2Log("  jd.collideConnected = bool(%d);\n", m_collideConnected);
-	b2Log("  jd.localAnchorA.Set(%.15lef, %.15lef);\n", m_localAnchorA.x, m_localAnchorA.y);
-	b2Log("  jd.localAnchorB.Set(%.15lef, %.15lef);\n", m_localAnchorB.x, m_localAnchorB.y);
-	b2Log("  jd.localAxisA.Set(%.15lef, %.15lef);\n", m_localXAxisA.x, m_localXAxisA.y);
+	b2Log("  jd.localAnchorA.Set(%.15lef, %.15lef);\n", m_localAnchorA.vector[0], m_localAnchorA.vector[1]);
+	b2Log("  jd.localAnchorB.Set(%.15lef, %.15lef);\n", m_localAnchorB.vector[0], m_localAnchorB.vector[1]);
+	b2Log("  jd.localAxisA.Set(%.15lef, %.15lef);\n", m_localXAxisA.vector[0], m_localXAxisA.vector[1]);
 	b2Log("  jd.referenceAngle = %.15lef;\n", m_referenceAngle);
 	b2Log("  jd.enableLimit = bool(%d);\n", m_enableLimit);
 	b2Log("  jd.lowerTranslation = %.15lef;\n", m_lowerTranslation);

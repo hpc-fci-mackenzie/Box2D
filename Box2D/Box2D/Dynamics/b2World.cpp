@@ -1232,10 +1232,10 @@ void b2World::DrawDebugData()
 					b2FixtureProxy* proxy = f->m_proxies + i;
 					b2AABB aabb = bp->GetFatAABB(proxy->proxyId);
 					b2Vec2 vs[4];
-					vs[0].Set(aabb.lowerBound.x, aabb.lowerBound.y);
-					vs[1].Set(aabb.upperBound.x, aabb.lowerBound.y);
-					vs[2].Set(aabb.upperBound.x, aabb.upperBound.y);
-					vs[3].Set(aabb.lowerBound.x, aabb.upperBound.y);
+					vs[0].Set(aabb.lowerBound.vector[0], aabb.lowerBound.vector[1]);
+					vs[1].Set(aabb.upperBound.vector[0], aabb.lowerBound.vector[1]);
+					vs[2].Set(aabb.upperBound.vector[0], aabb.upperBound.vector[1]);
+					vs[3].Set(aabb.lowerBound.vector[0], aabb.upperBound.vector[1]);
 
 					g_debugDraw->DrawPolygon(vs, 4, color);
 				}
@@ -1304,7 +1304,7 @@ void b2World::Dump()
 		return;
 	}
 
-	b2Log("b2Vec2 g(%.15lef, %.15lef);\n", m_gravity.x, m_gravity.y);
+	b2Log("b2Vec2 g(%.15lef, %.15lef);\n", m_gravity.vector[0], m_gravity.vector[1]);
 	b2Log("m_world->SetGravity(g);\n");
 
 	b2Log("b2Body** bodies = (b2Body**)b2Alloc(%d * sizeof(b2Body*));\n", m_bodyCount);

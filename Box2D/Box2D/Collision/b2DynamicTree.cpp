@@ -149,22 +149,22 @@ bool b2DynamicTree::MoveProxy(int32 proxyId, const b2AABB& aabb, const b2Vec2& d
 	// Predict AABB displacement.
 	b2Vec2 d = b2_aabbMultiplier * displacement;
 
-	if (d.x < 0.0f)
+	if (d.vector[0] < 0.0f)
 	{
-		b.lowerBound.x += d.x;
+		b.lowerBound.vector[0] += d.vector[0];
 	}
 	else
 	{
-		b.upperBound.x += d.x;
+		b.upperBound.vector[0] += d.vector[0];
 	}
 
-	if (d.y < 0.0f)
+	if (d.vector[1] < 0.0f)
 	{
-		b.lowerBound.y += d.y;
+		b.lowerBound.vector[1] += d.vector[1];
 	}
 	else
 	{
-		b.upperBound.y += d.y;
+		b.upperBound.vector[1] += d.vector[1];
 	}
 
 	m_nodes[proxyId].aabb = b;

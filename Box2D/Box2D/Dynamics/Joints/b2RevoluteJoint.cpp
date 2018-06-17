@@ -99,12 +99,12 @@ void b2RevoluteJoint::InitVelocityConstraints(const b2SolverData& data)
 
 	bool fixedRotation = (iA + iB == 0.0f);
 
-	m_mass.ex.x = mA + mB + m_rA.y * m_rA.y * iA + m_rB.y * m_rB.y * iB;
-	m_mass.ey.x = -m_rA.y * m_rA.x * iA - m_rB.y * m_rB.x * iB;
-	m_mass.ez.x = -m_rA.y * iA - m_rB.y * iB;
+	m_mass.ex.x = mA + mB + m_rA.vector[1] * m_rA.vector[1] * iA + m_rB.vector[1] * m_rB.vector[1] * iB;
+	m_mass.ey.x = -m_rA.vector[1] * m_rA.vector[0] * iA - m_rB.vector[1] * m_rB.vector[0] * iB;
+	m_mass.ez.x = -m_rA.vector[1] * iA - m_rB.vector[1] * iB;
 	m_mass.ex.y = m_mass.ey.x;
-	m_mass.ey.y = mA + mB + m_rA.x * m_rA.x * iA + m_rB.x * m_rB.x * iB;
-	m_mass.ez.y = m_rA.x * iA + m_rB.x * iB;
+	m_mass.ey.y = mA + mB + m_rA.vector[0] * m_rA.vector[0] * iA + m_rB.vector[0] * m_rB.vector[0] * iB;
+	m_mass.ez.y = m_rA.vector[0] * iA + m_rB.vector[0] * iB;
 	m_mass.ex.z = m_mass.ez.x;
 	m_mass.ey.z = m_mass.ez.y;
 	m_mass.ez.z = iA + iB;
@@ -211,7 +211,7 @@ void b2RevoluteJoint::SolveVelocityConstraints(const b2SolverData& data)
 	{
 		b2Vec2 Cdot1 = vB + b2Cross(wB, m_rB) - vA - b2Cross(wA, m_rA);
 		float32 Cdot2 = wB - wA;
-		b2Vec3 Cdot(Cdot1.x, Cdot1.y, Cdot2);
+		b2Vec3 Cdot(Cdot1.vector[0], Cdot1.vector[1], Cdot2);
 
 		b2Vec3 impulse = -m_mass.Solve33(Cdot);
 
@@ -226,11 +226,11 @@ void b2RevoluteJoint::SolveVelocityConstraints(const b2SolverData& data)
 			{
 				b2Vec2 rhs = -Cdot1 + m_impulse.z * b2Vec2(m_mass.ez.x, m_mass.ez.y);
 				b2Vec2 reduced = m_mass.Solve22(rhs);
-				impulse.x = reduced.x;
-				impulse.y = reduced.y;
+				impulse.x = reduced.vector[0];
+				impulse.y = reduced.vector[1];
 				impulse.z = -m_impulse.z;
-				m_impulse.x += reduced.x;
-				m_impulse.y += reduced.y;
+				m_impulse.x += reduced.vector[0];
+				m_impulse.y += reduced.vector[1];
 				m_impulse.z = 0.0f;
 			}
 			else
@@ -245,11 +245,11 @@ void b2RevoluteJoint::SolveVelocityConstraints(const b2SolverData& data)
 			{
 				b2Vec2 rhs = -Cdot1 + m_impulse.z * b2Vec2(m_mass.ez.x, m_mass.ez.y);
 				b2Vec2 reduced = m_mass.Solve22(rhs);
-				impulse.x = reduced.x;
-				impulse.y = reduced.y;
+				impulse.x = reduced.vector[0];
+				impulse.y = reduced.vector[1];
 				impulse.z = -m_impulse.z;
-				m_impulse.x += reduced.x;
-				m_impulse.y += reduced.y;
+				m_impulse.x += reduced.vector[0];
+				m_impulse.y += reduced.vector[1];
 				m_impulse.z = 0.0f;
 			}
 			else
@@ -272,8 +272,8 @@ void b2RevoluteJoint::SolveVelocityConstraints(const b2SolverData& data)
 		b2Vec2 Cdot = vB + b2Cross(wB, m_rB) - vA - b2Cross(wA, m_rA);
 		b2Vec2 impulse = m_mass.Solve22(-Cdot);
 
-		m_impulse.x += impulse.x;
-		m_impulse.y += impulse.y;
+		m_impulse.x += impulse.vector[0];
+		m_impulse.y += impulse.vector[1];
 
 		vA -= mA * impulse;
 		wA -= iA * b2Cross(m_rA, impulse);
@@ -352,10 +352,10 @@ bool b2RevoluteJoint::SolvePositionConstraints(const b2SolverData& data)
 		float32 iA = m_invIA, iB = m_invIB;
 
 		b2Mat22 K;
-		K.ex.x = mA + mB + iA * rA.y * rA.y + iB * rB.y * rB.y;
-		K.ex.y = -iA * rA.x * rA.y - iB * rB.x * rB.y;
-		K.ey.x = K.ex.y;
-		K.ey.y = mA + mB + iA * rA.x * rA.x + iB * rB.x * rB.x;
+		K.ex.vector[0] = mA + mB + iA * rA.vector[1] * rA.vector[1] + iB * rB.vector[1] * rB.vector[1];
+		K.ex.vector[1] = -iA * rA.vector[0] * rA.vector[1] - iB * rB.vector[0] * rB.vector[1];
+		K.ey.vector[0] = K.ex.vector[1];
+		K.ey.vector[1] = mA + mB + iA * rA.vector[0] * rA.vector[0] + iB * rB.vector[0] * rB.vector[0];
 
 		b2Vec2 impulse = -K.Solve(C);
 
@@ -498,8 +498,8 @@ void b2RevoluteJoint::Dump()
 	b2Log("  jd.bodyA = bodies[%d];\n", indexA);
 	b2Log("  jd.bodyB = bodies[%d];\n", indexB);
 	b2Log("  jd.collideConnected = bool(%d);\n", m_collideConnected);
-	b2Log("  jd.localAnchorA.Set(%.15lef, %.15lef);\n", m_localAnchorA.x, m_localAnchorA.y);
-	b2Log("  jd.localAnchorB.Set(%.15lef, %.15lef);\n", m_localAnchorB.x, m_localAnchorB.y);
+	b2Log("  jd.localAnchorA.Set(%.15lef, %.15lef);\n", m_localAnchorA.vector[0], m_localAnchorA.vector[1]);
+	b2Log("  jd.localAnchorB.Set(%.15lef, %.15lef);\n", m_localAnchorB.vector[0], m_localAnchorB.vector[1]);
 	b2Log("  jd.referenceAngle = %.15lef;\n", m_referenceAngle);
 	b2Log("  jd.enableLimit = bool(%d);\n", m_enableLimit);
 	b2Log("  jd.lowerAngle = %.15lef;\n", m_lowerAngle);

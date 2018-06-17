@@ -91,10 +91,10 @@ void b2FrictionJoint::InitVelocityConstraints(const b2SolverData& data)
 	float32 iA = m_invIA, iB = m_invIB;
 
 	b2Mat22 K;
-	K.ex.x = mA + mB + iA * m_rA.y * m_rA.y + iB * m_rB.y * m_rB.y;
-	K.ex.y = -iA * m_rA.x * m_rA.y - iB * m_rB.x * m_rB.y;
-	K.ey.x = K.ex.y;
-	K.ey.y = mA + mB + iA * m_rA.x * m_rA.x + iB * m_rB.x * m_rB.x;
+	K.ex.vector[0] = mA + mB + iA * m_rA.vector[1] * m_rA.vector[1] + iB * m_rB.vector[1] * m_rB.vector[1];
+	K.ex.vector[1] = -iA * m_rA.vector[0] * m_rA.vector[1] - iB * m_rB.vector[0] * m_rB.vector[1];
+	K.ey.vector[0] = K.ex.vector[1];
+	K.ey.vector[1] = mA + mB + iA * m_rA.vector[0] * m_rA.vector[0] + iB * m_rB.vector[0] * m_rB.vector[0];
 
 	m_linearMass = K.GetInverse();
 
@@ -110,7 +110,7 @@ void b2FrictionJoint::InitVelocityConstraints(const b2SolverData& data)
 		m_linearImpulse *= data.step.dtRatio;
 		m_angularImpulse *= data.step.dtRatio;
 
-		b2Vec2 P(m_linearImpulse.x, m_linearImpulse.y);
+		b2Vec2 P(m_linearImpulse.vector[0], m_linearImpulse.vector[1]);
 		vA -= mA * P;
 		wA -= iA * (b2Cross(m_rA, P) + m_angularImpulse);
 		vB += mB * P;
@@ -243,8 +243,8 @@ void b2FrictionJoint::Dump()
 	b2Log("  jd.bodyA = bodies[%d];\n", indexA);
 	b2Log("  jd.bodyB = bodies[%d];\n", indexB);
 	b2Log("  jd.collideConnected = bool(%d);\n", m_collideConnected);
-	b2Log("  jd.localAnchorA.Set(%.15lef, %.15lef);\n", m_localAnchorA.x, m_localAnchorA.y);
-	b2Log("  jd.localAnchorB.Set(%.15lef, %.15lef);\n", m_localAnchorB.x, m_localAnchorB.y);
+	b2Log("  jd.localAnchorA.Set(%.15lef, %.15lef);\n", m_localAnchorA.vector[0], m_localAnchorA.vector[1]);
+	b2Log("  jd.localAnchorB.Set(%.15lef, %.15lef);\n", m_localAnchorB.vector[0], m_localAnchorB.vector[1]);
 	b2Log("  jd.maxForce = %.15lef;\n", m_maxForce);
 	b2Log("  jd.maxTorque = %.15lef;\n", m_maxTorque);
 	b2Log("  joints[%d] = m_world->CreateJoint(&jd);\n", m_index);
