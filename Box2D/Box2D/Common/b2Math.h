@@ -490,31 +490,31 @@ inline float32 b2DistanceSquared(const b2Vec2& a, const b2Vec2& b)
 
 inline b2Vec3 operator * (float32 s, const b2Vec3& a)
 {
-	return b2Vec3(s * a.x, s * a.y, s * a.z);
+	return b2Vec3(s * a.vector[0], s * a.vector[1], s * a.vector[2]);
 }
 
 /// Add two vectors component-wise.
 inline b2Vec3 operator + (const b2Vec3& a, const b2Vec3& b)
 {
-	return b2Vec3(a.x + b.x, a.y + b.y, a.z + b.z);
+	return b2Vec3(a.vector[0] + b.vector[0], a.vector[1] + b.vector[1], a.vector[2] + b.vector[2]);
 }
 
 /// Subtract two vectors component-wise.
 inline b2Vec3 operator - (const b2Vec3& a, const b2Vec3& b)
 {
-	return b2Vec3(a.x - b.x, a.y - b.y, a.z - b.z);
+	return b2Vec3(a.vector[0] - b.vector[0], a.vector[1] - b.vector[1], a.vector[2] - b.vector[2]);
 }
 
 /// Perform the dot product on two vectors.
 inline float32 b2Dot(const b2Vec3& a, const b2Vec3& b)
 {
-	return a.x * b.x + a.y * b.y + a.z * b.z;
+	return a.vector[0] * b.vector[0] + a.vector[1] * b.vector[1] + a.vector[2] * b.vector[2];
 }
 
 /// Perform the cross product on two vectors.
 inline b2Vec3 b2Cross(const b2Vec3& a, const b2Vec3& b)
 {
-	return b2Vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+	return b2Vec3(a.vector[1] * b.vector[2] - a.vector[2] * b.vector[1], a.vector[2] * b.vector[0] - a.vector[0] * b.vector[2], a.vector[0] * b.vector[1] - a.vector[1] * b.vector[0]);
 }
 
 inline b2Mat22 operator + (const b2Mat22& A, const b2Mat22& B)
@@ -539,13 +539,13 @@ inline b2Mat22 b2MulT(const b2Mat22& A, const b2Mat22& B)
 /// Multiply a matrix times a vector.
 inline b2Vec3 b2Mul(const b2Mat33& A, const b2Vec3& v)
 {
-	return v.x * A.ex + v.y * A.ey + v.z * A.ez;
+	return v.vector[0] * A.ex + v.vector[1] * A.ey + v.vector[2] * A.ez;
 }
 
 /// Multiply a matrix times a vector.
 inline b2Vec2 b2Mul22(const b2Mat33& A, const b2Vec2& v)
 {
-	return b2Vec2(A.ex.x * v.vector[0] + A.ey.y * v.vector[1], A.ex.y * v.vector[0] + A.ey.y * v.vector[1]);
+	return b2Vec2(A.ex.vector[0] * v.vector[0] + A.ey.vector[1] * v.vector[1], A.ex.vector[1] * v.vector[0] + A.ey.vector[1] * v.vector[1]);
 }
 
 /// Multiply two rotations: q * r

@@ -99,15 +99,15 @@ void b2RevoluteJoint::InitVelocityConstraints(const b2SolverData& data)
 
 	bool fixedRotation = (iA + iB == 0.0f);
 
-	m_mass.ex.x = mA + mB + m_rA.vector[1] * m_rA.vector[1] * iA + m_rB.vector[1] * m_rB.vector[1] * iB;
-	m_mass.ey.x = -m_rA.vector[1] * m_rA.vector[0] * iA - m_rB.vector[1] * m_rB.vector[0] * iB;
-	m_mass.ez.x = -m_rA.vector[1] * iA - m_rB.vector[1] * iB;
-	m_mass.ex.y = m_mass.ey.x;
-	m_mass.ey.y = mA + mB + m_rA.vector[0] * m_rA.vector[0] * iA + m_rB.vector[0] * m_rB.vector[0] * iB;
-	m_mass.ez.y = m_rA.vector[0] * iA + m_rB.vector[0] * iB;
-	m_mass.ex.z = m_mass.ez.x;
-	m_mass.ey.z = m_mass.ez.y;
-	m_mass.ez.z = iA + iB;
+	m_mass.ex.vector[0] = mA + mB + m_rA.vector[1] * m_rA.vector[1] * iA + m_rB.vector[1] * m_rB.vector[1] * iB;
+	m_mass.ey.vector[0] = -m_rA.vector[1] * m_rA.vector[0] * iA - m_rB.vector[1] * m_rB.vector[0] * iB;
+	m_mass.ez.vector[0] = -m_rA.vector[1] * iA - m_rB.vector[1] * iB;
+	m_mass.ex.vector[1] = m_mass.ey.vector[0];
+	m_mass.ey.vector[1] = mA + mB + m_rA.vector[0] * m_rA.vector[0] * iA + m_rB.vector[0] * m_rB.vector[0] * iB;
+	m_mass.ez.vector[1] = m_rA.vector[0] * iA + m_rB.vector[0] * iB;
+	m_mass.ex.vector[2] = m_mass.ez.vector[0];
+	m_mass.ey.vector[2] = m_mass.ez.vector[1];
+	m_mass.ez.vector[2] = iA + iB;
 
 	m_motorMass = iA + iB;
 	if (m_motorMass > 0.0f)
@@ -131,7 +131,7 @@ void b2RevoluteJoint::InitVelocityConstraints(const b2SolverData& data)
 		{
 			if (m_limitState != e_atLowerLimit)
 			{
-				m_impulse.z = 0.0f;
+				m_impulse.vector[2] = 0.0f;
 			}
 			m_limitState = e_atLowerLimit;
 		}
@@ -139,14 +139,14 @@ void b2RevoluteJoint::InitVelocityConstraints(const b2SolverData& data)
 		{
 			if (m_limitState != e_atUpperLimit)
 			{
-				m_impulse.z = 0.0f;
+				m_impulse.vector[2] = 0.0f;
 			}
 			m_limitState = e_atUpperLimit;
 		}
 		else
 		{
 			m_limitState = e_inactiveLimit;
-			m_impulse.z = 0.0f;
+			m_impulse.vector[2] = 0.0f;
 		}
 	}
 	else
@@ -160,13 +160,13 @@ void b2RevoluteJoint::InitVelocityConstraints(const b2SolverData& data)
 		m_impulse *= data.step.dtRatio;
 		m_motorImpulse *= data.step.dtRatio;
 
-		b2Vec2 P(m_impulse.x, m_impulse.y);
+		b2Vec2 P(m_impulse.vector[0], m_impulse.vector[1]);
 
 		vA -= mA * P;
-		wA -= iA * (b2Cross(m_rA, P) + m_motorImpulse + m_impulse.z);
+		wA -= iA * (b2Cross(m_rA, P) + m_motorImpulse + m_impulse.vector[2]);
 
 		vB += mB * P;
-		wB += iB * (b2Cross(m_rB, P) + m_motorImpulse + m_impulse.z);
+		wB += iB * (b2Cross(m_rB, P) + m_motorImpulse + m_impulse.vector[2]);
 	}
 	else
 	{
@@ -221,17 +221,17 @@ void b2RevoluteJoint::SolveVelocityConstraints(const b2SolverData& data)
 		}
 		else if (m_limitState == e_atLowerLimit)
 		{
-			float32 newImpulse = m_impulse.z + impulse.z;
+			float32 newImpulse = m_impulse.vector[2] + impulse.vector[2];
 			if (newImpulse < 0.0f)
 			{
-				b2Vec2 rhs = -Cdot1 + m_impulse.z * b2Vec2(m_mass.ez.x, m_mass.ez.y);
+				b2Vec2 rhs = -Cdot1 + m_impulse.vector[2] * b2Vec2(m_mass.ez.vector[0], m_mass.ez.vector[1]);
 				b2Vec2 reduced = m_mass.Solve22(rhs);
-				impulse.x = reduced.vector[0];
-				impulse.y = reduced.vector[1];
-				impulse.z = -m_impulse.z;
-				m_impulse.x += reduced.vector[0];
-				m_impulse.y += reduced.vector[1];
-				m_impulse.z = 0.0f;
+				impulse.vector[0] = reduced.vector[0];
+				impulse.vector[1] = reduced.vector[1];
+				impulse.vector[2] = -m_impulse.vector[2];
+				m_impulse.vector[0] += reduced.vector[0];
+				m_impulse.vector[1] += reduced.vector[1];
+				m_impulse.vector[2] = 0.0f;
 			}
 			else
 			{
@@ -240,17 +240,17 @@ void b2RevoluteJoint::SolveVelocityConstraints(const b2SolverData& data)
 		}
 		else if (m_limitState == e_atUpperLimit)
 		{
-			float32 newImpulse = m_impulse.z + impulse.z;
+			float32 newImpulse = m_impulse.vector[2] + impulse.vector[2];
 			if (newImpulse > 0.0f)
 			{
-				b2Vec2 rhs = -Cdot1 + m_impulse.z * b2Vec2(m_mass.ez.x, m_mass.ez.y);
+				b2Vec2 rhs = -Cdot1 + m_impulse.vector[2] * b2Vec2(m_mass.ez.vector[0], m_mass.ez.vector[1]);
 				b2Vec2 reduced = m_mass.Solve22(rhs);
-				impulse.x = reduced.vector[0];
-				impulse.y = reduced.vector[1];
-				impulse.z = -m_impulse.z;
-				m_impulse.x += reduced.vector[0];
-				m_impulse.y += reduced.vector[1];
-				m_impulse.z = 0.0f;
+				impulse.vector[0] = reduced.vector[0];
+				impulse.vector[1] = reduced.vector[1];
+				impulse.vector[2] = -m_impulse.vector[2];
+				m_impulse.vector[0] += reduced.vector[0];
+				m_impulse.vector[1] += reduced.vector[1];
+				m_impulse.vector[2] = 0.0f;
 			}
 			else
 			{
@@ -258,13 +258,13 @@ void b2RevoluteJoint::SolveVelocityConstraints(const b2SolverData& data)
 			}
 		}
 
-		b2Vec2 P(impulse.x, impulse.y);
+		b2Vec2 P(impulse.vector[0], impulse.vector[1]);
 
 		vA -= mA * P;
-		wA -= iA * (b2Cross(m_rA, P) + impulse.z);
+		wA -= iA * (b2Cross(m_rA, P) + impulse.vector[2]);
 
 		vB += mB * P;
-		wB += iB * (b2Cross(m_rB, P) + impulse.z);
+		wB += iB * (b2Cross(m_rB, P) + impulse.vector[2]);
 	}
 	else
 	{
@@ -272,8 +272,8 @@ void b2RevoluteJoint::SolveVelocityConstraints(const b2SolverData& data)
 		b2Vec2 Cdot = vB + b2Cross(wB, m_rB) - vA - b2Cross(wA, m_rA);
 		b2Vec2 impulse = m_mass.Solve22(-Cdot);
 
-		m_impulse.x += impulse.vector[0];
-		m_impulse.y += impulse.vector[1];
+		m_impulse.vector[0] += impulse.vector[0];
+		m_impulse.vector[1] += impulse.vector[1];
 
 		vA -= mA * impulse;
 		wA -= iA * b2Cross(m_rA, impulse);
@@ -386,13 +386,13 @@ b2Vec2 b2RevoluteJoint::GetAnchorB() const
 
 b2Vec2 b2RevoluteJoint::GetReactionForce(float32 inv_dt) const
 {
-	b2Vec2 P(m_impulse.x, m_impulse.y);
+	b2Vec2 P(m_impulse.vector[0], m_impulse.vector[1]);
 	return inv_dt * P;
 }
 
 float32 b2RevoluteJoint::GetReactionTorque(float32 inv_dt) const
 {
-	return inv_dt * m_impulse.z;
+	return inv_dt * m_impulse.vector[2];
 }
 
 float32 b2RevoluteJoint::GetJointAngle() const
@@ -461,7 +461,7 @@ void b2RevoluteJoint::EnableLimit(bool flag)
 		m_bodyA->SetAwake(true);
 		m_bodyB->SetAwake(true);
 		m_enableLimit = flag;
-		m_impulse.z = 0.0f;
+		m_impulse.vector[2] = 0.0f;
 	}
 }
 
@@ -483,7 +483,7 @@ void b2RevoluteJoint::SetLimits(float32 lower, float32 upper)
 	{
 		m_bodyA->SetAwake(true);
 		m_bodyB->SetAwake(true);
-		m_impulse.z = 0.0f;
+		m_impulse.vector[2] = 0.0f;
 		m_lowerAngle = lower;
 		m_upperAngle = upper;
 	}

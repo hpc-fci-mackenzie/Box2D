@@ -92,15 +92,15 @@ void b2WeldJoint::InitVelocityConstraints(const b2SolverData& data)
 	float32 iA = m_invIA, iB = m_invIB;
 
 	b2Mat33 K;
-	K.ex.x = mA + mB + m_rA.vector[1] * m_rA.vector[1] * iA + m_rB.vector[1] * m_rB.vector[1] * iB;
-	K.ey.x = -m_rA.vector[1] * m_rA.vector[0] * iA - m_rB.vector[1] * m_rB.vector[0] * iB;
-	K.ez.x = -m_rA.vector[1] * iA - m_rB.vector[1] * iB;
-	K.ex.y = K.ey.x;
-	K.ey.y = mA + mB + m_rA.vector[0] * m_rA.vector[0] * iA + m_rB.vector[0] * m_rB.vector[0] * iB;
-	K.ez.y = m_rA.vector[0] * iA + m_rB.vector[1] * iB;
-	K.ex.z = K.ez.x;
-	K.ey.z = K.ez.y;
-	K.ez.z = iA + iB;
+	K.ex.vector[0] = mA + mB + m_rA.vector[1] * m_rA.vector[1] * iA + m_rB.vector[1] * m_rB.vector[1] * iB;
+	K.ey.vector[0] = -m_rA.vector[1] * m_rA.vector[0] * iA - m_rB.vector[1] * m_rB.vector[0] * iB;
+	K.ez.vector[0] = -m_rA.vector[1] * iA - m_rB.vector[1] * iB;
+	K.ex.vector[1] = K.ey.vector[0];
+	K.ey.vector[1] = mA + mB + m_rA.vector[0] * m_rA.vector[0] * iA + m_rB.vector[0] * m_rB.vector[0] * iB;
+	K.ez.vector[1] = m_rA.vector[0] * iA + m_rB.vector[1] * iB;
+	K.ex.vector[2] = K.ez.vector[0];
+	K.ey.vector[2] = K.ez.vector[1];
+	K.ez.vector[2] = iA + iB;
 
 	if (m_frequencyHz > 0.0f)
 	{
@@ -127,9 +127,9 @@ void b2WeldJoint::InitVelocityConstraints(const b2SolverData& data)
 		m_bias = C * h * k * m_gamma;
 
 		invM += m_gamma;
-		m_mass.ez.z = invM != 0.0f ? 1.0f / invM : 0.0f;
+		m_mass.ez.vector[2] = invM != 0.0f ? 1.0f / invM : 0.0f;
 	}
-	else if (K.ez.z == 0.0f)
+	else if (K.ez.vector[2] == 0.0f)
 	{
 		K.GetInverse22(&m_mass);
 		m_gamma = 0.0f;
@@ -147,13 +147,13 @@ void b2WeldJoint::InitVelocityConstraints(const b2SolverData& data)
 		// Scale impulses to support a variable time step.
 		m_impulse *= data.step.dtRatio;
 
-		b2Vec2 P(m_impulse.x, m_impulse.y);
+		b2Vec2 P(m_impulse.vector[0], m_impulse.vector[1]);
 
 		vA -= mA * P;
-		wA -= iA * (b2Cross(m_rA, P) + m_impulse.z);
+		wA -= iA * (b2Cross(m_rA, P) + m_impulse.vector[2]);
 
 		vB += mB * P;
-		wB += iB * (b2Cross(m_rB, P) + m_impulse.z);
+		wB += iB * (b2Cross(m_rB, P) + m_impulse.vector[2]);
 	}
 	else
 	{
@@ -180,8 +180,8 @@ void b2WeldJoint::SolveVelocityConstraints(const b2SolverData& data)
 	{
 		float32 Cdot2 = wB - wA;
 
-		float32 impulse2 = -m_mass.ez.z * (Cdot2 + m_bias + m_gamma * m_impulse.z);
-		m_impulse.z += impulse2;
+		float32 impulse2 = -m_mass.ez.vector[2] * (Cdot2 + m_bias + m_gamma * m_impulse.vector[2]);
+		m_impulse.vector[2] += impulse2;
 
 		wA -= iA * impulse2;
 		wB += iB * impulse2;
@@ -189,8 +189,8 @@ void b2WeldJoint::SolveVelocityConstraints(const b2SolverData& data)
 		b2Vec2 Cdot1 = vB + b2Cross(wB, m_rB) - vA - b2Cross(wA, m_rA);
 
 		b2Vec2 impulse1 = -b2Mul22(m_mass, Cdot1);
-		m_impulse.x += impulse1.vector[0];
-		m_impulse.y += impulse1.vector[1];
+		m_impulse.vector[0] += impulse1.vector[0];
+		m_impulse.vector[1] += impulse1.vector[1];
 
 		b2Vec2 P = impulse1;
 
@@ -209,13 +209,13 @@ void b2WeldJoint::SolveVelocityConstraints(const b2SolverData& data)
 		b2Vec3 impulse = -b2Mul(m_mass, Cdot);
 		m_impulse += impulse;
 
-		b2Vec2 P(impulse.x, impulse.y);
+		b2Vec2 P(impulse.vector[0], impulse.vector[1]);
 
 		vA -= mA * P;
-		wA -= iA * (b2Cross(m_rA, P) + impulse.z);
+		wA -= iA * (b2Cross(m_rA, P) + impulse.vector[2]);
 
 		vB += mB * P;
-		wB += iB * (b2Cross(m_rB, P) + impulse.z);
+		wB += iB * (b2Cross(m_rB, P) + impulse.vector[2]);
 	}
 
 	data.velocities[m_indexA].v = vA;
@@ -242,15 +242,15 @@ bool b2WeldJoint::SolvePositionConstraints(const b2SolverData& data)
 	float32 positionError, angularError;
 
 	b2Mat33 K;
-	K.ex.x = mA + mB + rA.vector[1] * rA.vector[1] * iA + rB.vector[1] * rB.vector[1] * iB;
-	K.ey.x = -rA.vector[1] * rA.vector[0] * iA - rB.vector[1] * rB.vector[0] * iB;
-	K.ez.x = -rA.vector[1] * iA - rB.vector[1] * iB;
-	K.ex.y = K.ey.x;
-	K.ey.y = mA + mB + rA.vector[0] * rA.vector[0] * iA + rB.vector[0] * rB.vector[0] * iB;
-	K.ez.y = rA.vector[0] * iA + rB.vector[0] * iB;
-	K.ex.z = K.ez.x;
-	K.ey.z = K.ez.y;
-	K.ez.z = iA + iB;
+	K.ex.vector[0] = mA + mB + rA.vector[1] * rA.vector[1] * iA + rB.vector[1] * rB.vector[1] * iB;
+	K.ey.vector[0] = -rA.vector[1] * rA.vector[0] * iA - rB.vector[1] * rB.vector[0] * iB;
+	K.ez.vector[0] = -rA.vector[1] * iA - rB.vector[1] * iB;
+	K.ex.vector[1] = K.ey.vector[0];
+	K.ey.vector[1] = mA + mB + rA.vector[0] * rA.vector[0] * iA + rB.vector[0] * rB.vector[0] * iB;
+	K.ez.vector[1] = rA.vector[0] * iA + rB.vector[0] * iB;
+	K.ex.vector[2] = K.ez.vector[0];
+	K.ey.vector[2] = K.ez.vector[1];
+	K.ez.vector[2] = iA + iB;
 
 	if (m_frequencyHz > 0.0f)
 	{
@@ -278,7 +278,7 @@ bool b2WeldJoint::SolvePositionConstraints(const b2SolverData& data)
 		b2Vec3 C(C1.vector[0], C1.vector[1], C2);
 	
 		b2Vec3 impulse;
-		if (K.ez.z > 0.0f)
+		if (K.ez.vector[2] > 0.0f)
 		{
 			impulse = -K.Solve33(C);
 		}
@@ -288,13 +288,13 @@ bool b2WeldJoint::SolvePositionConstraints(const b2SolverData& data)
 			impulse.Set(impulse2.vector[0], impulse2.vector[1], 0.0f);
 		}
 
-		b2Vec2 P(impulse.x, impulse.y);
+		b2Vec2 P(impulse.vector[0], impulse.vector[1]);
 
 		cA -= mA * P;
-		aA -= iA * (b2Cross(rA, P) + impulse.z);
+		aA -= iA * (b2Cross(rA, P) + impulse.vector[2]);
 
 		cB += mB * P;
-		aB += iB * (b2Cross(rB, P) + impulse.z);
+		aB += iB * (b2Cross(rB, P) + impulse.vector[2]);
 	}
 
 	data.positions[m_indexA].c = cA;
@@ -317,13 +317,13 @@ b2Vec2 b2WeldJoint::GetAnchorB() const
 
 b2Vec2 b2WeldJoint::GetReactionForce(float32 inv_dt) const
 {
-	b2Vec2 P(m_impulse.x, m_impulse.y);
+	b2Vec2 P(m_impulse.vector[0], m_impulse.vector[1]);
 	return inv_dt * P;
 }
 
 float32 b2WeldJoint::GetReactionTorque(float32 inv_dt) const
 {
-	return inv_dt * m_impulse.z;
+	return inv_dt * m_impulse.vector[2];
 }
 
 void b2WeldJoint::Dump()
