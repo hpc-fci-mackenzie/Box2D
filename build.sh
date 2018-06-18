@@ -9,6 +9,5 @@ cd Build
 for i in $( grep -R "C++11" * | cut -d : -f1 ); do
 	sed -i '' -e "s/C\+\+11/c\+\+11/g" $i
 done
-#xcodebuild -project Box2D.xcodeproj -configuration Release -verbose OTHER_CFLAGS="-Rpass=loop-vectorize -Rpass-missed=loop-vectorize -Rpass-analysis=loop-vectorize"
-#xcodebuild -workspace Box2D.xcworkspace -scheme Testbed -configuration Release -verbose OTHER_CFLAGS="-Rpass=loop-vectorize -Rpass-missed=loop-vectorize -Rpass-analysis=loop-vectorize -std=c++11"
-xcodebuild -project Testbed.xcodeproj -configuration Release -verbose OTHER_CFLAGS="-Rpass=loop-vectorize -Rpass-missed=loop-vectorize -Rpass-analysis=loop-vectorize"
+
+xcodebuild -workspace Box2D.xcworkspace -scheme Testbed -configuration Release -verbose #OTHER_CFLAGS="-Rpass=loop-vectorize -Rpass-missed=loop-vectorize -Rpass-analysis=loop-vectorize"
