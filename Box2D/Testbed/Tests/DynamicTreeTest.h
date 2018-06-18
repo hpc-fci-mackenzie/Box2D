@@ -197,16 +197,16 @@ private:
 		b2Vec2 w; w.Set(2.0f * m_proxyExtent, 2.0f * m_proxyExtent);
 		//aabb->lowerBound.x = -m_proxyExtent;
 		//aabb->lowerBound.y = -m_proxyExtent + m_worldExtent;
-		aabb->lowerBound.x = RandomFloat(-m_worldExtent, m_worldExtent);
-		aabb->lowerBound.y = RandomFloat(0.0f, 2.0f * m_worldExtent);
+		aabb->lowerBound.vector[0] = RandomFloat(-m_worldExtent, m_worldExtent);
+		aabb->lowerBound.vector[1] = RandomFloat(0.0f, 2.0f * m_worldExtent);
 		aabb->upperBound = aabb->lowerBound + w;
 	}
 
 	void MoveAABB(b2AABB* aabb)
 	{
 		b2Vec2 d;
-		d.x = RandomFloat(-0.5f, 0.5f);
-		d.y = RandomFloat(-0.5f, 0.5f);
+		d.vector[0] = RandomFloat(-0.5f, 0.5f);
+		d.vector[1] = RandomFloat(-0.5f, 0.5f);
 		//d.x = 2.0f;
 		//d.y = 0.0f;
 		aabb->lowerBound += d;

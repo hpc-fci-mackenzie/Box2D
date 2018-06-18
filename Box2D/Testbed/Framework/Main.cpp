@@ -117,7 +117,7 @@ static void sKeyCallback(GLFWwindow* window, int key, int scancode, int action, 
 			}
 			else
 			{
-				g_camera.m_center.x -= 0.5f;
+				g_camera.m_center.vector[0] -= 0.5f;
 			}
 			break;
 
@@ -130,7 +130,7 @@ static void sKeyCallback(GLFWwindow* window, int key, int scancode, int action, 
 			}
 			else
 			{
-				g_camera.m_center.x += 0.5f;
+				g_camera.m_center.vector[0] += 0.5f;
 			}
 			break;
 
@@ -143,7 +143,7 @@ static void sKeyCallback(GLFWwindow* window, int key, int scancode, int action, 
 			}
 			else
 			{
-				g_camera.m_center.y -= 0.5f;
+				g_camera.m_center.vector[1] -= 0.5f;
 			}
 			break;
 
@@ -156,7 +156,7 @@ static void sKeyCallback(GLFWwindow* window, int key, int scancode, int action, 
 			}
 			else
 			{
-				g_camera.m_center.y += 0.5f;
+				g_camera.m_center.vector[1] += 0.5f;
 			}
 			break;
 
@@ -297,8 +297,8 @@ static void sMouseMotion(GLFWwindow*, double xd, double yd)
 	if (rightMouseDown)
 	{
 		b2Vec2 diff = pw - lastp;
-		g_camera.m_center.x -= diff.x;
-		g_camera.m_center.y -= diff.y;
+		g_camera.m_center.vector[0] -= diff.vector[0];
+		g_camera.m_center.vector[1] -= diff.vector[1];
 		lastp = g_camera.ConvertScreenToWorld(ps);
 	}
 }

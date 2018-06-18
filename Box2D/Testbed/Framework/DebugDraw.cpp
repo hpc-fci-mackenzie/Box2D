@@ -40,8 +40,8 @@ b2Vec2 Camera::ConvertScreenToWorld(const b2Vec2& ps)
 {
     float32 w = float32(m_width);
     float32 h = float32(m_height);
-	float32 u = ps.x / w;
-	float32 v = (h - ps.y) / h;
+	float32 u = ps.vector[0] / w;
+	float32 v = (h - ps.vector[1]) / h;
 
 	float32 ratio = w / h;
 	b2Vec2 extents(ratio * 25.0f, 25.0f);
@@ -51,8 +51,8 @@ b2Vec2 Camera::ConvertScreenToWorld(const b2Vec2& ps)
 	b2Vec2 upper = m_center + extents;
 
 	b2Vec2 pw;
-	pw.x = (1.0f - u) * lower.x + u * upper.x;
-	pw.y = (1.0f - v) * lower.y + v * upper.y;
+	pw.vector[0] = (1.0f - u) * lower.vector[0] + u * upper.vector[0];
+	pw.vector[1] = (1.0f - v) * lower.vector[1] + v * upper.vector[1];
 	return pw;
 }
 
@@ -68,12 +68,12 @@ b2Vec2 Camera::ConvertWorldToScreen(const b2Vec2& pw)
 	b2Vec2 lower = m_center - extents;
 	b2Vec2 upper = m_center + extents;
 
-	float32 u = (pw.x - lower.x) / (upper.x - lower.x);
-	float32 v = (pw.y - lower.y) / (upper.y - lower.y);
+	float32 u = (pw.vector[0] - lower.vector[0]) / (upper.vector[0] - lower.vector[0]);
+	float32 v = (pw.vector[1] - lower.vector[1]) / (upper.vector[1] - lower.vector[1]);
 
 	b2Vec2 ps;
-	ps.x = u * w;
-	ps.y = (1.0f - v) * h;
+	ps.vector[0] = u * w;
+	ps.vector[1] = (1.0f - v) * h;
 	return ps;
 }
 
@@ -90,13 +90,13 @@ void Camera::BuildProjectionMatrix(float32* m, float32 zBias)
 	b2Vec2 lower = m_center - extents;
 	b2Vec2 upper = m_center + extents;
 
-	m[0] = 2.0f / (upper.x - lower.x);
+	m[0] = 2.0f / (upper.vector[0] - lower.vector[0]);
 	m[1] = 0.0f;
 	m[2] = 0.0f;
 	m[3] = 0.0f;
 
 	m[4] = 0.0f;
-	m[5] = 2.0f / (upper.y - lower.y);
+	m[5] = 2.0f / (upper.vector[1] - lower.vector[1]);
 	m[6] = 0.0f;
 	m[7] = 0.0f;
 
@@ -105,8 +105,8 @@ void Camera::BuildProjectionMatrix(float32* m, float32 zBias)
 	m[10] = 1.0f;
 	m[11] = 0.0f;
 
-	m[12] = -(upper.x + lower.x) / (upper.x - lower.x);
-	m[13] = -(upper.y + lower.y) / (upper.y - lower.y);
+	m[12] = -(upper.vector[0] + lower.vector[0]) / (upper.vector[0] - lower.vector[0]);
+	m[13] = -(upper.vector[1] + lower.vector[1]) / (upper.vector[1] - lower.vector[1]);
 	m[14] = zBias;
 	m[15] = 1.0f;
 }
@@ -685,8 +685,8 @@ void DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& 
 	{
         // Perform rotation to avoid additional trigonometry.
         b2Vec2 r2;
-        r2.x = cosInc * r1.x - sinInc * r1.y;
-        r2.y = sinInc * r1.x + cosInc * r1.y;
+        r2.vector[0] = cosInc * r1.vector[0] - sinInc * r1.vector[1];
+        r2.vector[1] = sinInc * r1.vector[0] + cosInc * r1.vector[1];
 		b2Vec2 v2 = center + radius * r2;
         m_lines->Vertex(v1, color);
         m_lines->Vertex(v2, color);
@@ -710,8 +710,8 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Ve
 	{
         // Perform rotation to avoid additional trigonometry.
         b2Vec2 r2;
-        r2.x = cosInc * r1.x - sinInc * r1.y;
-        r2.y = sinInc * r1.x + cosInc * r1.y;
+        r2.vector[0] = cosInc * r1.vector[0] - sinInc * r1.vector[1];
+        r2.vector[1] = sinInc * r1.vector[0] + cosInc * r1.vector[1];
 		b2Vec2 v2 = center + radius * r2;
 		m_triangles->Vertex(v0, fillColor);
         m_triangles->Vertex(v1, fillColor);
@@ -725,8 +725,8 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Ve
 	for (int32 i = 0; i < k_segments; ++i)
 	{
         b2Vec2 r2;
-        r2.x = cosInc * r1.x - sinInc * r1.y;
-        r2.y = sinInc * r1.x + cosInc * r1.y;
+        r2.vector[0] = cosInc * r1.vector[0] - sinInc * r1.vector[1];
+        r2.vector[1] = sinInc * r1.vector[0] + cosInc * r1.vector[1];
 		b2Vec2 v2 = center + radius * r2;
         m_lines->Vertex(v1, color);
         m_lines->Vertex(v2, color);
@@ -800,9 +800,9 @@ void DebugDraw::DrawString(const b2Vec2& pw, const char *string, ...)
 void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
 {
     b2Vec2 p1 = aabb->lowerBound;
-    b2Vec2 p2 = b2Vec2(aabb->upperBound.x, aabb->lowerBound.y);
+    b2Vec2 p2 = b2Vec2(aabb->upperBound.vector[0], aabb->lowerBound.vector[1]);
     b2Vec2 p3 = aabb->upperBound;
-    b2Vec2 p4 = b2Vec2(aabb->lowerBound.x, aabb->upperBound.y);
+    b2Vec2 p4 = b2Vec2(aabb->lowerBound.vector[0], aabb->upperBound.vector[1]);
     
     m_lines->Vertex(p1, c);
     m_lines->Vertex(p2, c);

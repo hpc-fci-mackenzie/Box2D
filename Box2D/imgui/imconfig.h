@@ -32,7 +32,7 @@
 //---- Define constructor and implicit cast operators to convert back<>forth from your math types and ImVec2/ImVec4.
 #include "Box2D/Common/b2Math.h"
 #define IM_VEC2_CLASS_EXTRA                                                 \
-        ImVec2(const b2Vec2& f) { x = f.x; y = f.y; }                       \
+        ImVec2(const b2Vec2& f) { x = f.vector[0]; y = f.vector[1]; }                       \
         operator b2Vec2() const { return b2Vec2(x,y); }
 
 /*

@@ -94,7 +94,7 @@ public:
 #if 1
 		b2Vec2 position = m_character->GetBody()->GetPosition();
 
-		if (position.y < m_top + m_radius - 3.0f * b2_linearSlop)
+		if (position.vector[1] < m_top + m_radius - 3.0f * b2_linearSlop)
 		{
 			contact->SetEnabled(false);
 		}
@@ -114,7 +114,7 @@ public:
 		m_textLine += DRAW_STRING_NEW_LINE;
 
         b2Vec2 v = m_character->GetBody()->GetLinearVelocity();
-        g_debugDraw.DrawString(5, m_textLine, "Character Linear Velocity: %f", v.y);
+        g_debugDraw.DrawString(5, m_textLine, "Character Linear Velocity: %f", v.vector[1]);
 		m_textLine += DRAW_STRING_NEW_LINE;
 	}
 

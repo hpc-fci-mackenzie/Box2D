@@ -96,19 +96,19 @@ public:
 		switch (key)
 		{
 		case GLFW_KEY_A:
-			m_positionB.x -= 0.1f;
+			m_positionB.vector[0] -= 0.1f;
 			break;
 
 		case GLFW_KEY_D:
-			m_positionB.x += 0.1f;
+			m_positionB.vector[0] += 0.1f;
 			break;
 
 		case GLFW_KEY_S:
-			m_positionB.y -= 0.1f;
+			m_positionB.vector[1] -= 0.1f;
 			break;
 
 		case GLFW_KEY_W:
-			m_positionB.y += 0.1f;
+			m_positionB.vector[1] += 0.1f;
 			break;
 
 		case GLFW_KEY_Q:

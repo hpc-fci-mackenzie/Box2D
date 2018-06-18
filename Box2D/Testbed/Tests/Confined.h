@@ -148,9 +148,9 @@ public:
 			}
 
 			b2Vec2 p = b->GetPosition();
-			if (p.x <= -10.0f || 10.0f <= p.x || p.y <= 0.0f || 20.0f <= p.y)
+			if (p.vector[0] <= -10.0f || 10.0f <= p.vector[0] || p.vector[1] <= 0.0f || 20.0f <= p.vector[1])
 			{
-				p.x += 0.0f;
+				p.vector[0] += 0.0f;
 			}
 		}
 
